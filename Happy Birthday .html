@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday Vasu</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --gold:#FFD700;
+  --gold2:#FFA500;
+  --cream:#FFF8E7;
+  --dark:#080808;
+  --dark2:#111111;
+  --dark3:#1a1a1a;
+  --red:#FF2D2D;
+}
+html,body{width:100%;min-height:100vh;background:var(--dark);overflow-x:hidden}
+body{font-family:'Space Mono',monospace;color:var(--cream)}
+
+/* CANVAS */
+#canvas{position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none}
+
+/* INTRO SCREEN */
+#intro{
+  position:fixed;inset:0;z-index:100;
+  background:var(--dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  cursor:pointer;transition:opacity 0.8s ease;
+}
+#intro.hidden{opacity:0;pointer-events:none}
+.intro-text{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1rem,3vw,1.4rem);
+  letter-spacing:0.4em;
+  color:rgba(255,215,0,0.4);
+  text-transform:uppercase;
+  animation:pulse 2s ease-in-out infinite;
+}
+.intro-big{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,10vw,8rem);
+  font-weight:900;
+  font-style:italic;
+  color:var(--gold);
+  line-height:0.9;
+  text-shadow:0 0 80px rgba(255,215,0,0.3);
+  margin:1rem 0;
+}
+@keyframes pulse{0%,100%{opacity:0.4}50%{opacity:1}}
+
+/* MAIN CONTENT */
+#main{
+  position:relative;z-index:10;
+  min-height:100vh;
+  opacity:0;transition:opacity 1.2s ease;
+}
+#main.visible{opacity:1}
+
+/* HERO */
+.hero{
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:2rem;position:relative;
+}
+.hero-label{
+  font-size:0.7rem;letter-spacing:0.5em;color:rgba(255,215,0,0.5);
+  text-transform:uppercase;margin-bottom:2rem;
+  opacity:0;transform:translateY(20px);transition:all 0.8s ease 0.2s;
+}
+.hero-name{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(4rem,14vw,12rem);
+  font-weight:900;line-height:0.85;
+  background:linear-gradient(135deg,var(--gold) 0%,var(--gold2) 40%,var(--cream) 60%,var(--gold) 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200% 200%;animation:shimmer 3s ease-in-out infinite;
+  opacity:0;transform:translateY(30px);transition:all 1s ease 0.5s;
+}
+@keyframes shimmer{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.hero-sub{
+  font-family:'Playfair Display',serif;font-style:italic;
+  font-size:clamp(1.2rem,4vw,2.5rem);color:rgba(255,248,231,0.6);
+  margin-top:1.5rem;
+  opacity:0;transform:translateY(20px);transition:all 0.8s ease 0.9s;
+}
+.scroll-hint{
+  position:absolute;bottom:3rem;left:50%;transform:translateX(-50%);
+  font-size:0.65rem;letter-spacing:0.4em;color:rgba(255,215,0,0.3);
+  text-transform:uppercase;
+  opacity:0;transition:all 0.8s ease 1.5s;
+  animation:bounce 2s ease-in-out infinite;
+}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(8px)}}
+
+.visible .hero-label,.visible .hero-name,.visible .hero-sub,.visible .scroll-hint{
+  opacity:1;transform:translateY(0);
+}
+
+/* DIVIDER */
+.divider{
+  display:flex;align-items:center;gap:1rem;padding:0 5vw;margin:4rem 0;
+}
+.divider-line{flex:1;height:1px;background:rgba(255,215,0,0.15)}
+.divider-symbol{color:var(--gold);font-size:1.2rem;letter-spacing:0.3em}
+
+/* SECTIONS */
+.section{padding:6rem 5vw;position:relative}
+
+/* BIG NUMBER */
+.age-section{
+  text-align:center;padding:8rem 5vw;
+  border-top:1px solid rgba(255,215,0,0.08);
+  border-bottom:1px solid rgba(255,215,0,0.08);
+}
+.age-label{font-size:0.65rem;letter-spacing:0.6em;color:rgba(255,215,0,0.4);text-transform:uppercase;margin-bottom:1rem}
+.age-number{
+  font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
+  font-size:clamp(8rem,30vw,22rem);line-height:0.8;
+  color:transparent;
+  -webkit-text-stroke:1px rgba(255,215,0,0.15);
+  position:relative;
+}
+.age-number::after{
+  content:attr(data-num);
+  position:absolute;inset:0;
+  font-family:'Playfair Display',serif;font-weight:900;font-style:italic;
+  font-size:inherit;
+  background:linear-gradient(135deg,rgba(255,215,0,0.05),rgba(255,165,0,0.1));
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+/* MESSAGE CARDS */
+.cards-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:1.5rem;
+  max-width:1100px;margin:0 auto;
+}
+.card{
+  background:rgba(255,215,0,0.03);
+  border:1px solid rgba(255,215,0,0.1);
+  border-radius:2px;padding:2.5rem;
+  position:relative;overflow:hidden;
+  transition:border-color 0.3s ease,background 0.3s ease;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  opacity:0;transition:opacity 0.3s ease;
+}
+.card:hover{border-color:rgba(255,215,0,0.25);background:rgba(255,215,0,0.05)}
+.card:hover::before{opacity:1}
+.card-icon{font-size:2rem;margin-bottom:1.2rem;display:block}
+.card-title{
+  font-family:'Playfair Display',serif;font-size:1.2rem;font-weight:700;
+  color:var(--gold);margin-bottom:0.8rem;letter-spacing:0.02em;
+}
+.card-text{font-size:0.8rem;line-height:1.9;color:rgba(255,248,231,0.55);letter-spacing:0.03em}
+
+/* QUOTE BLOCK */
+.quote-block{
+  max-width:800px;margin:0 auto;text-align:center;padding:6rem 5vw;
+}
+.quote-mark{
+  font-family:'Playfair Display',serif;font-size:8rem;line-height:0.5;
+  color:rgba(255,215,0,0.1);display:block;margin-bottom:1rem;
+}
+.quote-text{
+  font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(1.3rem,4vw,2.2rem);
+  color:var(--cream);line-height:1.5;font-weight:400;
+}
+.quote-attr{
+  margin-top:2rem;font-size:0.65rem;letter-spacing:0.5em;color:rgba(255,215,0,0.4);text-transform:uppercase;
+}
+
+/* WISH SECTION */
+.wish-section{
+  text-align:center;padding:8rem 5vw;background:rgba(255,215,0,0.02);
+}
+.wish-title{
+  font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,4.5rem);font-weight:900;
+  color:var(--gold);line-height:1.1;margin-bottom:2rem;
+}
+.wish-text{font-size:0.85rem;line-height:2.2;color:rgba(255,248,231,0.5);max-width:600px;margin:0 auto;letter-spacing:0.04em}
+.signature{
+  margin-top:4rem;font-family:'Playfair Display',serif;font-style:italic;
+  font-size:1.8rem;color:rgba(255,215,0,0.6);
+}
+
+/* FOOTER */
+footer{
+  border-top:1px solid rgba(255,215,0,0.08);
+  padding:3rem 5vw;text-align:center;
+  font-size:0.65rem;letter-spacing:0.4em;color:rgba(255,215,0,0.2);text-transform:uppercase;
+}
+
+/* FLOATING ELEMENTS */
+.float-el{
+  position:fixed;font-family:'Playfair Display',serif;font-style:italic;
+  color:rgba(255,215,0,0.04);font-size:clamp(4rem,15vw,10rem);font-weight:900;
+  pointer-events:none;z-index:1;user-select:none;
+}
+
+/* SCROLL REVEAL */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 0.9s ease,transform 0.9s ease}
+.reveal.shown{opacity:1;transform:translateY(0)}
+</style>
+</head>
+<body>
+
+<canvas id="canvas"></canvas>
+
+<!-- INTRO -->
+<div id="intro">
+  <p class="intro-text">tera time aa gaya Vasu</p>
+  <p class="intro-big">💀</p>
+  <p class="intro-text" style="letter-spacing:0.2em;font-size:clamp(0.8rem,2vw,1rem)">tap kar, agar himmat hai toh</p>
+</div>
+
+<!-- FLOATING TEXT -->
+<div class="float-el" style="top:10%;left:-2%;transform:rotate(-15deg)">✦</div>
+<div class="float-el" style="bottom:15%;right:-2%;transform:rotate(20deg)">✦</div>
+
+<!-- MAIN -->
+<div id="main">
+
+  <!-- HERO -->
+  <section class="hero">
+    <p class="hero-label">duniya ka sabse average banda aaj bada hua</p>
+    <h1 class="hero-name" id="bday-name">Happy<br>Birthday<br>Vasu 💀</h1>
+    <p class="hero-sub">16 saal, aur abhi bhi kuch nahi seekha</p>
+    <p class="scroll-hint">↓ scroll ↓</p>
+  </section>
+
+  <div class="divider"><div class="divider-line"></div><span class="divider-symbol">✦ ✦ ✦</span><div class="divider-line"></div></div>
+
+  <!-- AGE -->
+  <section class="age-section reveal">
+    <p class="age-label">16 saal waste kar diye</p>
+    <p class="age-number" data-num="16">16</p>
+    <p style="margin-top:2rem;font-size:0.7rem;letter-spacing:0.5em;color:rgba(255,215,0,0.3);text-transform:uppercase">aur kya achieve kiya? kuch nahi.</p>
+  </section>
+
+  <!-- CARDS -->
+  <section class="section reveal">
+    <div class="cards-grid">
+      <div class="card">
+        <span class="card-icon">💀</span>
+        <p class="card-title">16 saal ka "hero"</p>
+        <p class="card-text">Bhai 16 saal ho gaye aur abhi bhi mirror mein khud ko cool samajhta hai. Yeh confidence kahan se aata hai seriously.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🎮</span>
+        <p class="card-title">Kaju wala sach</p>
+        <p class="card-text">Kaju bhi Discord pe sirf isliye baat karta hai kyunki uske aur koi option nahi. Dono ek doosre ke saath isliye hain kyunki baaki sabne block kar diya.</p>
+      </div>
+      <div class="card">
+        <span class="card-icon">🪞</span>
+        <p class="card-title">Teri reality</p>
+        <p class="card-text">16 ka hua, par maturity abhi bhi loading hai. Estimated time — unknown. Shayad kabhi complete na ho.</p>
+      </div>
+    </div>
+  </section>
+
+  <div class="divider"><div class="divider-line"></div><span class="divider-symbol">✦</span><div class="divider-line"></div></div>
+
+  <!-- QUOTE -->
+  <div class="quote-block reveal">
+    <span class="quote-mark">"</span>
+    <p class="quote-text">Vasu ne 16 saal mein jo achieve kiya — woh ek blank page pe bhi fit nahi hoga, kyunki woh bhi waste hoga.</p>
+    <p class="quote-attr">— tere dost, pyaar se</p>
+  </div>
+
+  <div class="divider"><div class="divider-line"></div><span class="divider-symbol">✦ ✦ ✦</span><div class="divider-line"></div></div>
+
+  <!-- WISH -->
+  <section class="wish-section reveal">
+    <h2 class="wish-title">Happy Birthday<br>Vasu 💀</h2>
+    <p class="wish-text">
+      16 saal ka ho gaya par abhi bhi wahi waala tu hai.<br>
+      Kaju ke saath Discord pe time barbaad karta rehta hai.<br>
+      Cake kat, photo le, aur wapis so ja —<br>
+      tera routine toh yahi hai na.<br><br>
+      Jokes apart — happy birthday bhai. Tu theek hai. 🖤
+    </p>
+    <p class="signature">— tere dost jo tujhe handle karte hain 💀</p>
+  </section>
+
+  <footer>vasu ka din · happy 16th · ✦</footer>
+</div>
+
+<script>
+// PARTICLE CANVAS
+const canvas=document.getElementById('canvas');
+const ctx=canvas.getContext('2d');
+let W,H,particles=[];
+function resize(){W=canvas.width=window.innerWidth;H=canvas.height=window.innerHeight}
+resize();window.addEventListener('resize',resize);
+
+class Particle{
+  constructor(){this.reset()}
+  reset(){
+    this.x=Math.random()*W;
+    this.y=Math.random()*H+H;
+    this.size=Math.random()*2+0.5;
+    this.speed=Math.random()*0.6+0.2;
+    this.opacity=Math.random()*0.4+0.1;
+    this.drift=(Math.random()-0.5)*0.3;
+    this.twinkle=Math.random()*Math.PI*2;
+    this.twinkleSpeed=Math.random()*0.02+0.005;
+  }
+  update(){
+    this.y-=this.speed;this.x+=this.drift;
+    this.twinkle+=this.twinkleSpeed;
+    if(this.y<-10)this.reset();
+  }
+  draw(){
+    const o=this.opacity*(0.6+0.4*Math.sin(this.twinkle));
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle=`rgba(255,215,0,${o})`;
+    ctx.fill();
+  }
+}
+
+for(let i=0;i<120;i++){
+  const p=new Particle();p.y=Math.random()*H;particles.push(p);
+}
+
+function animate(){
+  ctx.clearRect(0,0,W,H);
+  particles.forEach(p=>{p.update();p.draw()});
+  requestAnimationFrame(animate);
+}
+animate();
+
+// INTRO
+const intro=document.getElementById('intro');
+const main=document.getElementById('main');
+intro.addEventListener('click',()=>{
+  intro.classList.add('hidden');
+  setTimeout(()=>{
+    main.classList.add('visible');
+    intro.style.display='none';
+  },800);
+});
+
+// SCROLL REVEAL
+const revealEls=document.querySelectorAll('.reveal');
+const observer=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('shown')});
+},{threshold:0.15});
+revealEls.forEach(el=>observer.observe(el));
+</script>
+</body>
+</html>
